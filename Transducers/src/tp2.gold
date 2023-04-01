@@ -1,0 +1,251 @@
+//GOLD importation.
+using gold.**
+
+var inIf
+var inArguments
+
+// Main procedure.
+procedure main(args:String[]) begin
+	inIf = false
+	inArguments = false
+	GAutomataFrame.show(createAutomaton())
+ end
+
+// Automaton creation function.
+function createAutomaton():IAutomaton
+
+	begin
+		
+		Q := {
+				"spaceFromBegin",
+				"spaceFromNumber",
+				"spaceFromNumberInIf",
+				"spaceFromIf",
+				"spaceFromThen",
+				"spaceFromLetter",
+				"spaceFromElse",
+				"spaceFromComma",
+				"spaceFromMod",
+				"spaceFromRparen",
+				"initial",
+				"b",
+				"be",
+				"beg",
+				"begi",
+				"begin",
+				"e",
+				"en",
+				"end",
+				"i",
+				"if",
+				"e",
+				"el",
+				"els",
+				"else",
+				"t",
+				"th",
+				"the",
+				"then", 
+				":",
+				"=",
+				":=",
+				"letter",
+				"letterFromBegin",
+				"letterInArguments",
+				"letterInIf",
+				"number", 
+				"numberInIf",
+				"lparen", 
+				"rparen", 
+				"comma",
+				"<",
+				">",
+				"<=",
+				">=",
+				"operator",
+				"m",
+				"mo",
+				"mod",
+				"err"
+			}
+		Σ := ('a'‥'z')∪('0'‥'9')∪{'=', ':', '+', '-', '/', '*', '=', '<', '>', '(', ')', ',', ' '}
+		q := "initial"
+		F := {"end"}
+ 
+ 		return GDeterministicAutomaton(Q, Σ, q, F, δ)
+ 		
+	end
+
+// Delta function.
+function δ(state, character) 
+	begin
+		
+		lettersSet := ('a'‥'z')
+		numbersSet := ('0'‥'9')
+		operatorsSet := {'+', '-', '*', '/'}
+		comparatorsSet := {'=', '<', '>', "<=", ">="}
+	
+		// " SpaceFromBegin" state
+		if state=="spaceFromBegin" and character=='i' then return "i"
+		elseif state=="spaceFromBegin" and character∈lettersSet then return "letterFromBegin"
+		// "initial" state
+		elseif state=="initial" and character=='b' then return "b"
+		// "spaceFromNumber" state
+		elseif state=="spaceFromNumber" and character=='t' and inIf then return "t"
+		elseif state=="spaceFromNumber" and character=='i' then return "i"
+		elseif state=="spaceFromNumber" and character=='e' and inIf then return "e"
+		elseif state=="spaceFromNumber" and character=='m' then return "m"
+		elseif state=="spaceFromNumber" and character∈lettersSet then return "letterFromBegin"
+		// "spaceFromNumberInIf" state
+		elseif state=="spaceFromNumberInIf" and character=='t' then return "t"
+		elseif state=="spaceFromNumberInIf" and character=='m' then return "m"
+		elseif state=="spaceFromNumberInIf" and character=='e' then return "e"
+		// "spaceFromIf" state
+		elseif state=="spaceFromIf" and character∈lettersSet then return "letter"
+		elseif state=="spaceFromIf" and character∈numbersSet then return "number"
+		// "spaceFromThen" state
+		elseif state=="spaceFromThen" and character∈lettersSet then return "letterFromBegin"
+		// "spaceFromLetter" state
+		elseif state=="spaceFromLetter" and character=='i' then return "i"
+		elseif state=="spaceFromLetter" and character=='m' then return "m"
+		elseif state=="spaceFromLetter" and character=='e' and inIf then return "e"
+		elseif state=="spaceFromLatter" and character=='t' and inIf then return "t"
+		// "spaceFromElse" state
+		elseif state=="spaceFromElse" and character∈lettersSet then return "letterFromBegin"
+		// "spaceFromComma" state
+		elseif state=="spaceFromComma" and character=='m' then return "m"
+		elseif state=="spaceFromComma" and character∈lettersSet then return "letter"
+		// "spaceFromMod" state	
+		elseif state=="spaceFromMod" and character∈lettersSet then return "letter"
+		elseif state=="spaceFromMod" and character∈numbersSet then return "number"
+		// "spaceFromRparen" state
+		elseif state=="spaceFromRparen" and character=='e' then return "e"
+		elseif state=="spaceFromRparen" and character∈lettersSet then return "letterFromBegin"
+		// "m" state	
+		elseif state=="m" and character=='o' then return "mo"
+		// "mo" state	
+		elseif state=="mo" and character=='d' then return "mod"
+		// "mod" state	
+		elseif state=="mod" and character==' ' then return "spaceFromMod"
+		// "b" state
+		elseif state=="b" and character=='e' then return "be"
+		// "be" state
+		elseif state=="be" and character=='g' then return "beg"
+		// "beg" state
+		elseif state=="beg" and character=='i' then return "begi"
+		// "begi" state
+		elseif state=="begi" and character=='n' then return "begin"
+		// "begin" state
+		elseif state=="begin" and character==' ' then return "spaceFromBegin"
+		// "i" state
+		elseif state=="i" and character=='f' then return "if"
+		elseif state=="i" and character∈lettersSet then return "letterFromBegin"
+		// "if" state
+		elseif state=="if" and character==' ' then inIf:=true return "spaceFromIf"
+		elseif state=="if" and character∈lettersSet then return "letterFromBegin"
+		elseif state=="if" and character∈numbersSet then return "numberInIf"
+		// "letterInIf" state
+		elseif state=="letterInIf" and character==' ' then return "spaceFromNumberInIf"
+		elseif state=="letterInIf" and character∈lettersSet then return "letterInIf"
+		elseif state=="letterInIf" and character=='(' then  return "lparen"
+		elseif state=="letterInIf" and character=='=' then  return "="
+		elseif state=="letterInIf" and character∈operatorsSet then return "operator"
+		// "letterInArguments" state
+		elseif state=="letterInArguments" and character==',' then return "comma"
+		elseif state=="letterInArguments" and character==')' then return "rparen"
+		elseif state=="letterInArguments" and character==' ' then return "spaceFromLetter"
+		elseif state=="letterInArguments" and character=='=' then return "="
+		elseif state=="letterInArguments" and character∈lettersSet then return "letterInArguments"
+		elseif state=="letterInArguments" and character∈operatorsSet then return "operator"
+		elseif state=="letterInArguments" and character=='=' then return "="
+		elseif state=="letterInArguments" and character=='<' then return "<"
+		elseif state=="letterInArguments" and character=='>' then return ">"
+		// "letterFromBegin" state
+		elseif state=="letterFromBegin" and character==':' then return ":"
+		elseif state=="letterFromBegin" and character∈lettersSet then return "letterFromBegin"
+		// "letter" state
+		elseif state=="letter" and character==' ' then return "spaceFromLetter"
+		elseif state=="letter" and character=='=' then return "="
+		elseif state=="letter" and character∈lettersSet then return "letter"
+		elseif state=="letter" and character=='(' then inArguments:=true return "lparen"
+		elseif state=="letter" and character∈operatorsSet then return "operator"
+		elseif state=="letter" and character=='=' then return "="
+		elseif state=="letter" and character=='<' then return "<"
+		elseif state=="letter" and character=='>' then return ">"
+		elseif state=="letter" and character==')' and inArguments then inArguments:=false return "rparen"
+		// "rparen" state
+		elseif state=="rparen" and character==' ' then return "spaceFromRparen"
+		// "comma" state	
+		elseif state=="comma" and character==' ' then return "spaceFromComma"
+		// "lparen" state	
+		elseif state=="lparen" and character=='m' then return "m"
+		elseif state=="lparen" and character∈lettersSet then return "letterInArguments"
+		// "e" state	
+		elseif state=="e" and character=='l' then return "el"
+		elseif state=="e" and character=='n' and !inIf then return "en"
+		// "en" state	
+		elseif state=="en" and character=='d' then return "end"
+		// "el" state	
+		elseif state=="el" and character=='s' then return "els"
+		// "els" state	
+		elseif state=="els" and character=='e' then return "else"
+		// "els" state	
+		elseif state=="els" and character=='e' then return "else"
+		// "else" state	
+		elseif state=="else" and character=' ' then inIf:=false return "spaceFromElse"
+		// ":" state	
+		elseif state==":" and character=='=' then return ":="
+		// ":=" state	
+		elseif state==":=" and character∈lettersSet then return "letter"
+		elseif state==":=" and character∈numbersSet then return "number"
+		// "=" state
+		elseif state=="=" and character∈numbersSet then return "numberInIf"
+		elseif state=="=" and character∈lettersSet then return "letterInIf"
+		// "numberInIf" state
+		elseif state=="numberInIf" and character∈numbersSet then return "numberInIf"
+		elseif state=="numberInIf" and character==' ' then return "spaceFromNumberInIf"
+		elseif state=="numberInIf" and character∈operatorsSet then return "operator"
+		elseif state=="numberInIf" and character=='=' then return "="
+		elseif state=="numberInIf" and character=='<' then return "<"
+		elseif state=="numberInIf" and character=='>' then return ">"
+		// "number" state
+		elseif state=="number" and character∈numbersSet then return "number"
+		elseif state=="number" and character==' ' then return "spaceFromNumber"
+		elseif state=="number" and character∈operatorsSet then return "operator"
+		elseif state=="number" and character=='=' then return "="
+		elseif state=="number" and character=='<' then return "<"
+		elseif state=="number" and character=='>' then return ">"
+		// "t" state
+		elseif state=="t" and character=='h' then return "th"
+		// "th" state
+		elseif state=="th" and character=='e' then return "the"
+		// "the" state
+		elseif state=="the" and character=='n' then return "then"
+		// "then" state
+		elseif state=="then" and character==' ' then return "spaceFromThen"
+		// "=" state
+		elseif state=="=" and character∈numbersSet then return "numberInIf"
+		elseif state=="=" and character∈lettersSet then return "letterInIf"
+		// "<" state
+		elseif state=="<" and character∈numbersSet then return "number"
+		elseif state=="<" and character∈lettersSet then return "letter"
+		elseif state=="<" and character=='=' then return "<="	
+		// "<=" state
+		elseif state=="<=" and character∈numbersSet then return "number"
+		elseif state=="<=" and character∈lettersSet then return "letter"	
+		// ">" state
+		elseif state==">" and character∈numbersSet then return "number"
+		elseif state==">" and character∈lettersSet then return "letter"
+		elseif state==">" and character=='=' then return ">="	
+		// ">=" state
+		elseif state==">=" and character∈numbersSet then return "number"
+		elseif state==">=" and character∈lettersSet then return "letter"
+		// "operator" state
+		elseif state=="operator" and character∈numbersSet then return "number"
+		elseif state=="operator" and character∈lettersSet then return "letter"
+		
+		else return "err"
+			
+			
+	end
+end
