@@ -83,7 +83,7 @@ function δ(state, character)
 		lettersSet := ('a'‥'z')
 		numbersSet := ('0'‥'9')
 		operatorsSet := {'+', '-', '*', '/'}
-		comparatorsSet := {'=', '<', '>', "<=", ">="}
+		comparatorsSet := {'=', '<', '>'}
 	
 		// " SpaceFromBegin" state
 		if state=="spaceFromBegin" and character=='i' then return "i"
@@ -109,7 +109,7 @@ function δ(state, character)
 		elseif state=="spaceFromLetter" and character=='i' then return "i"
 		elseif state=="spaceFromLetter" and character=='m' then return "m"
 		elseif state=="spaceFromLetter" and character=='e' and inIf then return "e"
-		elseif state=="spaceFromLatter" and character=='t' and inIf then return "t"
+		elseif state=="spaceFromLetter" and character=='t' and inIf then return "t"
 		// "spaceFromElse" state
 		elseif state=="spaceFromElse" and character∈lettersSet then return "letterFromBegin"
 		// "spaceFromComma" state
@@ -198,6 +198,8 @@ function δ(state, character)
 		// ":=" state	
 		elseif state==":=" and character∈lettersSet then return "letter"
 		elseif state==":=" and character∈numbersSet then return "number"
+		elseif state==":=" and character∈lettersSet and inIf then return "letterInIf"
+		elseif state==":=" and character∈numbersSet and inIf then return "numberInIf"
 		// "=" state
 		elseif state=="=" and character∈numbersSet then return "numberInIf"
 		elseif state=="=" and character∈lettersSet then return "letterInIf"
